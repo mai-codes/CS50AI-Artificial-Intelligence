@@ -91,9 +91,44 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    """Finds a solution to maze, if one exists."""
+    # Initialize frontier to just the starting position
+    # the states are the actors and actions are the movies
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
 
-    # TODO
-    raise NotImplementedError
+    # Initialize an empty explored set
+    explored = set()
+
+    # Keep looping until solution found
+    while True:
+
+        # If nothing left in frontier, then no path
+        if frontier.empty():
+            return None
+
+        # Choose a node from the frontier
+        node = frontier.remove()
+
+        # Add neighbors to frontier
+        for action, state in neighbors_for_person(node.state):
+            if not frontier.contains_state(state) and state not in explored:
+                child = Node(state=state, parent=node, action=action)
+
+                # If node is the goal, then we have a solution
+                if child.state == target:
+                    res = []
+                    while child.parent is not None:
+                        res.append((child.action, child.state))
+                        child = child.parent
+                    res.reverse()
+                    return res
+                else:
+                    frontier.add(child)
+
+        # Mark node as explored
+        explored.add(node.state)
 
 
 def person_id_for_name(name):
